@@ -1,2 +1,2 @@
-# dwm
+# DWM
 Personal DWM Setup
