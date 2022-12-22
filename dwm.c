@@ -1273,11 +1273,11 @@ focus(Client *c)
 		attachstack(c);
 		grabbuttons(c, 1);
 		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
-		if (!c->isfloating) {
-			wc.sibling = selmon->barwin;
-			wc.stack_mode = Below;
-			XConfigureWindow(dpy, c->win, CWSibling | CWStackMode, &wc);
-		}
+		//if (!c->isfloating) {
+			//wc.sibling = selmon->barwin;
+			//wc.stack_mode = Below;
+			//XConfigureWindow(dpy, c->win, CWSibling | CWStackMode, &wc);
+		//}
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1624,10 +1624,10 @@ monocle(Monitor *m)
 	for (c = m->clients; c; c = c->next)
 		if (ISVISIBLE(c))
 			n++;
-	if (n > 0) /* override layout symbol */
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
+	//if (n > 0) /* override layout symbol */
+		//snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx - c->bw, m->wy, m->ww, m->wh, False);
+		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
 }
 
 void
@@ -2528,7 +2528,7 @@ tagmon(const Arg *arg)
 void
 tile(Monitor *m)
 {
-	unsigned int i, n, h, smh, mw, my, ty;
+	unsigned int i, n, h, r, g = 0, smh, mw, my, ty;
 	float mfacts = 0, sfacts = 0;
 	Client *c;
 
@@ -2542,20 +2542,18 @@ tile(Monitor *m)
 		return;
 
 	if (n > m->nmaster)
-		mw = m->nmaster ? m->ww * m->mfact : 0;
+		mw = m->nmaster ? (m->ww - (g = gappx)) * m->mfact : 0;
 	else
 		mw = m->ww;
 	for (i = 0, my = ty = m->gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
  		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - m->gappx;
-			resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw), 0);
-			if (my + HEIGHT(c) + m->gappx < m->wh)
-				my += HEIGHT(c) + m->gappx;
+	 		r = MIN(n, m->nmaster) - i;
+			h = (m->wh - my - m->gappx * (r - 1)) / r; // (MIN(n, m->nmaster) - i) - m->gappx;
+			resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx, h - (2*c->bw) - m->gappx, 0);
+			if(!(nexttiled(c->next)))
+				resize(c, m->wx + m->gappx, m->wy + my, mw - (2*c->bw) - m->gappx * 2, h - (2*c->bw) - m->gappx, 0);
+			my += HEIGHT(c) + m->gappx;
  		} else {
-			//h = (m->wh - ty) / (n - i) - m->gappx;
-			//resize(c, m->wx + mw + m->gappx, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappx, h - (2*c->bw), 0);
-			//if (ty + HEIGHT(c) + m->gappx < m->wh)
-				//ty += HEIGHT(c) + m->gappx;
                         smh = m->mh * m->smfact;
                         if(!(nexttiled(c->next)))
                                 h = (m->wh - ty) / (n - i);
@@ -2564,15 +2562,15 @@ tile(Monitor *m)
                         if(h < minwsz) {
                                 c->isfloating = True;
                                 XRaiseWindow(dpy, c->win);
-                                resize(c, m->mx + (m->mw / 2 - WIDTH(c) / 2), m->my + (m->mh / 2 - HEIGHT(c) / 2), m->ww - mw - (2*c->bw), h - (2*c->bw), False);
-                                ty -= HEIGHT(c);
+                                resize(c, m->mx + m->gappx + (m->mw / 2 - WIDTH(c) / 2), m->my + (m->mh / 2 - HEIGHT(c) / 2) - m->gappx * 2, m->ww - mw - (2*c->bw) - gappx, h - (2*c->bw) - m->gappx * 2, 0);
+                                ty -= HEIGHT(c) + m->gappx;
                         }
                         else
-                                resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), False);
+                                resize(c, m->wx + m->gappx + mw, m->wy + ty, m->ww - mw - (2*c->bw) - m->gappx * 2, h - (2*c->bw) - m->gappx, 0);
                         if(!(nexttiled(c->next)))
-                                ty += HEIGHT(c) + smh;
+                                ty += HEIGHT(c) + smh + m->gappx;
                         else
-                                ty += HEIGHT(c);
+                                ty += HEIGHT(c) + m->gappx;
                 }
  }
 
