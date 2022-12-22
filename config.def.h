@@ -148,7 +148,8 @@ static Button buttons[] = {
 	 */
 	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 1} },
 	{ ClkClientWin,         MODKEY,         Button2,        setlayout, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        dragmfact,    {0} },
+	{ ClkClientWin,         MODKEY,         Button3,        resizeorfacts,    {0} },
+	{ ClkClientWin,         MODKEY|ShiftMask, Button3,      dragcfact,      {0} },
 	{ ClkClientWin,         MODKEY|ShiftMask, Button1,      resizemouse,      {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },

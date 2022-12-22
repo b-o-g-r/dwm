@@ -75,7 +75,7 @@
 #define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
 
 /* enums */
-enum { CurNormal, CurResize, CurMove, CurResizeHorzArrow, CurResizeVertArrow, CurLast }; /* cursor */
+enum { CurNormal, CurResize, CurMove, CurResizeHorzArrow, CurResizeVertArrow, CurDragFact, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
@@ -194,6 +194,8 @@ static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+static void dragfact(const Arg *arg);
+static void dragcfact(const Arg *arg);
 static void dragmfact(const Arg *arg);
 static void drawbar(Monitor *m);
 static void drawbars(void);
@@ -232,6 +234,7 @@ static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
+static void resizeorfacts(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
 static void run(void);
@@ -847,6 +850,79 @@ dirtomon(int dir)
 }
 
 void
+dragfact(const Arg *arg)
+{
+	unsigned int n;
+	int px, py; // pointer coordinates
+	int dist_x, dist_y;
+	int horizontal = 0; // layout configuration
+	float mfact, smfact, cfact, cf, cw, ch, mw, mh;
+	Client *c;
+	Monitor *m = selmon;
+	XEvent ev;
+	Time lasttime = 0;
+
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (!(c = m->sel) || !n || !m->lt[m->sellt]->arrange)
+		return;
+
+	/* Add custom handling for horizontal layouts here, e.g. */
+	//if (m->lt[m->sellt]->arrange == bstack)
+	// 	horizontal = 1;
+
+	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
+		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
+		return;
+
+	if (!getrootptr(&px, &py))
+		return;
+
+	cf = c->cfact;
+	ch = c->h;
+	cw = c->w;
+	mw = m->ww * m->mfact;
+	mh = m->wh * m->smfact;
+
+	do {
+		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
+		switch (ev.type) {
+		case ConfigureRequest:
+		case Expose:
+		case MapRequest:
+			handler[ev.type](&ev);
+			break;
+		case MotionNotify:
+			if ((ev.xmotion.time - lasttime) <= (1000 / 40))
+				continue;
+			lasttime = ev.xmotion.time;
+
+			dist_x = ev.xmotion.x - px;
+			dist_y = ev.xmotion.y - py;
+
+			if (horizontal) {
+				cfact = (float) cf * (cw + dist_x) / cw;
+				mfact = (float) (mh + dist_y) / m->wh;
+				smfact = (float) (mw - dist_x) / m->ww;
+			} else {
+				cfact = (float) cf * (ch - dist_y) / ch;
+				mfact = (float) (mw + dist_x) / m->ww;
+				smfact = (float) (mh - dist_y) / m->wh;
+			}
+
+			c->cfact = MAX(0.25, MIN(4.0, cfact));
+			m->mfact = MAX(0.05, MIN(0.95, mfact));
+			m->smfact = MAX(0.05, MIN(0.95, smfact));
+
+			arrangemon(m);
+			break;
+		}
+	} while (ev.type != ButtonRelease);
+
+	XUngrabPointer(dpy, CurrentTime);
+	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
+}
+
+void
 dragmfact(const Arg *arg)
 {
 	unsigned int n;
@@ -1134,6 +1210,20 @@ drawbars(void)
 }
 
 void
+resizeorfacts(const Arg *arg)
+{
+	Monitor *m = selmon;
+
+	if (!m->sel)
+		return;
+
+	if (!m->lt[m->sellt]->arrange || m->sel->isfloating)
+		resizemouse(arg);
+	else
+		dragfact(arg);
+}
+
+void
 enternotify(XEvent *e)
 {
 	Client *c;
@@ -1168,6 +1258,8 @@ expose(XEvent *e)
 void
 focus(Client *c)
 {
+	XWindowChanges wc;
+
 	if (!c || !ISVISIBLE(c))
 		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
 	if (selmon->sel && selmon->sel != c)
@@ -1181,6 +1273,11 @@ focus(Client *c)
 		attachstack(c);
 		grabbuttons(c, 1);
 		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+		if (!c->isfloating) {
+			wc.sibling = selmon->barwin;
+			wc.stack_mode = Below;
+			XConfigureWindow(dpy, c->win, CWSibling | CWStackMode, &wc);
+		}
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1339,7 +1436,7 @@ grabbuttons(Client *c, int focused)
 		for (i = 0; i < LENGTH(buttons); i++)
 			if (buttons[i].click == ClkClientWin)
 				for (j = 0; j < LENGTH(modifiers); j++)
-					XGrabButton(dpy, buttons[i].button,
+				XGrabButton(dpy, buttons[i].button,
 						buttons[i].mask | modifiers[j],
 						c->win, False, BUTTONMASK,
 						GrabModeAsync, GrabModeSync, None, None);
@@ -1530,7 +1627,7 @@ monocle(Monitor *m)
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
+		resize(c, m->wx - c->bw, m->wy, m->ww, m->wh, False);
 }
 
 void
@@ -2153,6 +2250,30 @@ setlayout(const Arg *arg)
 		drawbar(selmon);
 }
 
+void
+setcfact(const Arg *arg)
+{
+        float f;
+        Client *c;
+
+        c = selmon->sel;
+
+        if (!arg || !c || !selmon->lt[selmon->sellt]->arrange)
+                return;
+        if (!arg->f)
+                f = 1.0;
+        else if (arg->f > 4.0) // set fact absolutely
+                f = arg->f - 4.0;
+        else
+                f = arg->f + c->cfact;
+        if (f < 0.25)
+                f = 0.25;
+        else if (f > 4.0)
+                f = 4.0;
+        c->cfact = f;
+        arrange(selmon);
+}
+
 /* arg > 1.0 will set mfact absolutely */
 void
 setmfact(const Arg *arg)
@@ -2179,6 +2300,74 @@ setsmfact(const Arg *arg) {
                return;
        selmon->smfact = sf;
        arrange(selmon);
+}
+
+void
+dragcfact(const Arg *arg)
+{
+	int prev_x, prev_y, dist_x, dist_y;
+	float fact;
+	Client *c;
+	XEvent ev;
+	Time lasttime = 0;
+	
+	if (!(c = selmon->sel))
+		return;
+	if (c->isfloating) {
+		resizemouse(arg);
+		return;
+	}
+
+	restack(selmon);
+
+	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
+		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
+		return;
+	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
+
+	prev_x = prev_y = -999999;
+
+	do {
+		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
+		switch(ev.type) {
+		case ConfigureRequest:
+		case Expose:
+		case MapRequest:
+			handler[ev.type](&ev);
+			break;
+		case MotionNotify:
+			if ((ev.xmotion.time - lasttime) <= (1000 / 60))
+				continue;
+			if (lasttime != 0) {
+				prev_x = ev.xmotion.x;
+				prev_y = ev.xmotion.y;
+			}
+			lasttime = ev.xmotion.time;
+
+			dist_x = ev.xmotion.x - prev_x;
+			dist_y = ev.xmotion.y - prev_y;
+
+			if (abs(dist_x) > abs(dist_y)) {
+				fact = (float) 4.0 * dist_x / c->mon->ww;
+			} else {
+				fact = (float) -4.0 * dist_y / c->mon->wh;
+			}
+
+			//if (fact)
+				//setcfact(&((Arg) { .f = fact }));
+			
+			setsmfact(&((Arg) { .f = 1.0 + fact }));				
+			prev_x = ev.xmotion.x;
+			prev_y = ev.xmotion.y;
+			break;
+		}
+	} while (ev.type != ButtonRelease);
+
+
+	//XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
+
+	XUngrabPointer(dpy, CurrentTime);
+	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 
 void
@@ -2232,6 +2421,7 @@ setup(void)
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	cursor[CurResizeHorzArrow] = drw_cur_create(drw, XC_sb_h_double_arrow);
 	cursor[CurResizeVertArrow] = drw_cur_create(drw, XC_sb_v_double_arrow);
+	cursor[CurDragFact] = drw_cur_create(drw, XC_rightbutton);
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
