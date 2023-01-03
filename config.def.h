@@ -12,9 +12,9 @@ static const int systraypinningfailfirst = 0;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Hack Nerd Font Mono:size=8" };
-static const char font[]	    = { "Hack Nerd Font Mono:size=8" };
-static const char dmenufont[]       = "Hack Nerd Font Mono:size=8";
+static const char *fonts[]          = { "Hack Nerd Font Mono:size=16" };
+static const char font[]	    = { "Hack Nerd Font Mono:size=16" };
+static const char dmenufont[]       = "Hack Nerd Font Mono:size=16";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -66,6 +66,8 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
+#define ALTMODKEY Mod1Mask
+
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -146,9 +148,9 @@ static Button buttons[] = {
 	 * to control these separately (i.e. to retain the feature to move a tiled window
 	 * into a floating position).
 	 */
-	{ ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 1} },
+	{ ClkClientWin,         ALTMODKEY,         Button1,        moveorplace,    {.i = 1} },
 	{ ClkClientWin,         MODKEY,         Button2,        setlayout, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resizeorfacts,    {0} },
+	{ ClkClientWin,         ALTMODKEY,         Button3,        resizeorfacts,    {0} },
 	{ ClkClientWin,         MODKEY|ShiftMask, Button3,      dragcfact,      {0} },
 	{ ClkClientWin,         MODKEY|ShiftMask, Button1,      resizemouse,      {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
