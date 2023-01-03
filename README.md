@@ -3,7 +3,9 @@ Personal DWM Setup
 
 ## Installation
 * Install dependencies:
-  * `sudo pacman -S dmenu freetype2 libx11 libxft libxinerama st`
+  * `sudo pacman -S dmenu freetype2 libx11 libxft libxinerama`
+* Install ST:
+  * [Follow the instructions here](https://github.com/b-o-g-r/st)
 * Create a folder for the source files in /etc:
   * `sudo mkdir /etc/dwm`
 * Enter the newly created folder:
