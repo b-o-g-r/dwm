@@ -103,7 +103,7 @@ static const char *dmenucmd[] = {
 static const char *termcmd[] = {"st", NULL};
 
 static const Key keys[] = {
-    /* modifier                     key        function        argument */
+    /* modifier | key | function | argument */
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY, XK_b, togglebar, {0}},
@@ -116,6 +116,7 @@ static const Key keys[] = {
     {MODKEY | ShiftMask, XK_h, setsmfact, {.f = +0.05}},
     {MODKEY | ShiftMask, XK_l, setsmfact, {.f = -0.05}},
     {MODKEY, XK_Return, zoom, {0}},
+    {0, XK_Pause, zoom, {0}},
     {MODKEY, XK_Tab, view, {0}},
     {MODKEY | ShiftMask, XK_c, killclient, {0}},
     {MODKEY, XK_t, setlayout, {.v = &layouts[0]}},
@@ -141,12 +142,11 @@ static const Key keys[] = {
             TAGKEYS(XK_9, 8){MODKEY | ShiftMask, XK_q, quit, {0}},
 };
 
-#define Button7 7
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
  * ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
-    /* click                event mask      button          function argument */
+    /* click | event mask | button | function argument */
     {ClkLtSymbol, 0, Button1, setlayout, {0}},
     {ClkLtSymbol, 0, Button3, setlayout, {.v = &layouts[1]}},
     {ClkWinTitle, 0, Button2, zoom, {0}},
@@ -166,7 +166,6 @@ static Button buttons[] = {
     {ClkClientWin, ALTMODKEY, Button3, resizeorfacts, {0}},
     {ClkClientWin, MODKEY | ShiftMask, Button3, dragcfact, {0}},
     {ClkClientWin, MODKEY | ShiftMask, Button1, resizemouse, {0}},
-    {ClkClientWin, 0, Button7, zoom, {0}},
     {ClkTagBar, 0, Button1, view, {0}},
     {ClkTagBar, 0, Button3, toggleview, {0}},
     {ClkTagBar, MODKEY, Button1, tag, {0}},
