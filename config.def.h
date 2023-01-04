@@ -42,18 +42,19 @@ static const unsigned int alphas[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = {"Main", "Dev", "Graphics", "Misc", "[Work]"};
+static const char *tags[] = {"Main",  "Dev",  "Graphics",
+                             "Games", "Misc", "[Work]"};
 
 static const Rule rules[] = {
     /* xprop(1):
      *	WM_CLASS(STRING) = instance, class
      *	WM_NAME(STRING) = title
      */
-    /* class      instance    title       tags mask     isfloating   monitor */
-    {"Gimp", NULL, NULL, 0, 1, -1},
-    {"Firefox", NULL, NULL, 1 << 8, 0, -1},
-    {"Google-chrome", NULL, NULL, 1 << 0, 0, 0},
-    {"VSCodium", NULL, NULL, 1 << 1, 0, 1},
+    /* class      instance    title       tags mask     switchtotag isfloating
+       monitor */
+    {"Firefox", NULL, NULL, 1 << 8, 1, 0, -1},
+    {"Google-chrome", NULL, NULL, 1 << 0, 1, 0, 0},
+    {"VSCodium", NULL, NULL, 1 << 1, 1, 0, 1},
 };
 
 /* layout(s) */
