@@ -53,9 +53,7 @@ static const Rule rules[] = {
        monitor */
     {"Firefox", NULL, NULL, 1 << 0, 1, 0, -1},
     {"Google-chrome", NULL, NULL, 1 << 0, 1, 0, 0},
-    {"Google-chrome", NULL, "Laptop-Work", 1 << 0, 1, 0, 1},
-    {"Google-chrome", NULL, "Remote Access - Chrome Remote Desktop", 1 << 0, 1,
-     0, 1},
+    {"Chrome-Remote-Desktop", NULL, NULL, 1 << 0, 1, 1, 1},
     {"VSCodium", NULL, NULL, 1 << 1, 1, 0, 1},
 };
 
