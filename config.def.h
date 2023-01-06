@@ -80,10 +80,14 @@ static const Layout layouts[] = {
 #define ALTMODKEY Mod1Mask
 
 #define TAGKEYS(KEY, TAG)                                                      \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
-      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
-      {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
+  {KeyPress, MODKEY, KEY, view, {.ui = 1 << TAG}},                             \
+      {KeyPress, MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},     \
+      {KeyPress, MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},              \
+      {KeyPress,                                                               \
+       MODKEY | ControlMask | ShiftMask,                                       \
+       KEY,                                                                    \
+       toggletag,                                                              \
+       {.ui = 1 << TAG}},
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                                             \
@@ -92,13 +96,12 @@ static const Layout layouts[] = {
   }
 
 /* volume control */
-static const char *upvol[] = {"amixer", "-D",  "pulse", "sset",
-                              "Master", "5%+", NULL};
-static const char *downvol[] = {"amixer", "-D",  "pulse", "sset",
-                                "Master", "5%-", NULL};
+static const char *upvol[] = {
+    "sh", "-c", "amixer set Master 5%+ && pkill -RTMIN+2 dwmblocks", NULL};
+static const char *downvol[] = {
+    "sh", "-c", "amixer set Master 5%- && pkill -RTMIN+2 dwmblocks", NULL};
 
-static const char *runrofi[] = {"rofi",       "-show",   "combi",
-                                "-kb-cancel", "Super_L", NULL};
+static const char *runrofi[] = {"sh", "-c", "rofi -show combi", NULL};
 
 /* commands */
 static char dmenumon[2] =
@@ -109,45 +112,44 @@ static const char *dmenucmd[] = {
 static const char *termcmd[] = {"st", NULL};
 
 static const Key keys[] = {
-    /* modifier | key | function | argument */
-    {0, XK_Super_L, spawn, {.v = runrofi}},
-    {MODKEY, XK_p, spawn, {.v = dmenucmd}},
-    {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
-    {MODKEY, XK_b, togglebar, {0}},
-    {MODKEY, XK_j, focusstack, {.i = +1}},
-    {MODKEY, XK_k, focusstack, {.i = -1}},
-    {MODKEY, XK_i, incnmaster, {.i = +1}},
-    {MODKEY, XK_d, incnmaster, {.i = -1}},
-    {MODKEY, XK_h, setmfact, {.f = -0.05}},
-    {MODKEY, XK_l, setmfact, {.f = +0.05}},
-    {MODKEY | ShiftMask, XK_h, setsmfact, {.f = +0.05}},
-    {MODKEY | ShiftMask, XK_l, setsmfact, {.f = -0.05}},
-    {MODKEY, XK_Return, zoom, {0}},
-    {0, XK_Pause, setlayout, {0}},
-    {MODKEY, XK_Tab, view, {0}},
-    {MODKEY, XK_c, killclient, {0}},
-    {MODKEY, XK_q, killclient, {0}},
-    {MODKEY, XK_t, setlayout, {.v = &layouts[0]}},
-    {MODKEY, XK_m, setlayout, {.v = &layouts[1]}},
-    // 	{ MODKEY,                       XK_f,      setlayout,      {.v =
-    // &layouts[2]} },
-    {MODKEY, XK_space, setlayout, {0}},
-    {MODKEY | ShiftMask, XK_space, togglefloating, {0}},
-    {MODKEY, XK_0, view, {.ui = ~0}},
-    {MODKEY | ShiftMask, XK_0, tag, {.ui = ~0}},
-    {MODKEY, XK_comma, focusmon, {.i = -1}},
-    {MODKEY, XK_period, focusmon, {.i = +1}},
-    {MODKEY | ShiftMask, XK_comma, tagmon, {.i = -1}},
-    {MODKEY | ShiftMask, XK_period, tagmon, {.i = +1}},
-    // 	{ MODKEY|ShiftMask,             XK_KP_Add, spawn,          {.v = upvol }
-    // }, 	{ MODKEY|ShiftMask,             XK_KP_Subtract, spawn,     {.v =
-    // downvol } },
-    {MODKEY, XK_minus, setgaps, {.i = -1}},
-    {MODKEY, XK_equal, setgaps, {.i = +1}},
-    {MODKEY | ShiftMask, XK_equal, setgaps, {.i = 0}},
+    /* event | modifier | key | function | argument */
+    {KeyPress, MODKEY, XK_grave, spawn, {.v = runrofi}},
+    {KeyPress, MODKEY, XK_p, spawn, {.v = dmenucmd}},
+    {KeyPress, MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
+    {KeyPress, MODKEY, XK_b, togglebar, {0}},
+    {KeyPress, MODKEY, XK_j, focusstack, {.i = +1}},
+    {KeyPress, MODKEY, XK_k, focusstack, {.i = -1}},
+    {KeyPress, MODKEY, XK_i, incnmaster, {.i = +1}},
+    {KeyPress, MODKEY, XK_d, incnmaster, {.i = -1}},
+    {KeyPress, MODKEY, XK_h, setmfact, {.f = -0.05}},
+    {KeyPress, MODKEY, XK_l, setmfact, {.f = +0.05}},
+    {KeyPress, MODKEY | ShiftMask, XK_h, setsmfact, {.f = +0.05}},
+    {KeyPress, MODKEY | ShiftMask, XK_l, setsmfact, {.f = -0.05}},
+    {KeyPress, MODKEY, XK_Return, zoom, {0}},
+    {KeyPress, 0, XK_Pause, setlayout, {0}},
+    {KeyPress, MODKEY, XK_Tab, view, {0}},
+    {KeyPress, MODKEY, XK_c, killclient, {0}},
+    {KeyPress, MODKEY, XK_q, killclient, {0}},
+    {KeyPress, MODKEY, XK_t, setlayout, {.v = &layouts[0]}},
+    {KeyPress, MODKEY, XK_m, setlayout, {.v = &layouts[1]}},
+    // 	{ KeyPress, MODKEY,                       XK_f,      setlayout,      {.v
+    // = &layouts[2]} },
+    {KeyPress, MODKEY, XK_space, setlayout, {0}},
+    {KeyPress, MODKEY | ShiftMask, XK_space, togglefloating, {0}},
+    {KeyPress, MODKEY, XK_0, view, {.ui = ~0}},
+    {KeyPress, MODKEY | ShiftMask, XK_0, tag, {.ui = ~0}},
+    {KeyPress, MODKEY, XK_comma, focusmon, {.i = -1}},
+    {KeyPress, MODKEY, XK_period, focusmon, {.i = +1}},
+    {KeyPress, MODKEY | ShiftMask, XK_comma, tagmon, {.i = -1}},
+    {KeyPress, MODKEY | ShiftMask, XK_period, tagmon, {.i = +1}},
+    {KeyPress, MODKEY, XK_KP_Add, spawn, {.v = upvol}},
+    {KeyPress, MODKEY, XK_KP_Subtract, spawn, {.v = downvol}},
+    {KeyPress, MODKEY, XK_minus, setgaps, {.i = -1}},
+    {KeyPress, MODKEY, XK_equal, setgaps, {.i = +1}},
+    {KeyPress, MODKEY | ShiftMask, XK_equal, setgaps, {.i = 0}},
     TAGKEYS(XK_1, 0) TAGKEYS(XK_2, 1) TAGKEYS(XK_3, 2) TAGKEYS(XK_4, 3)
         TAGKEYS(XK_5, 4) TAGKEYS(XK_6, 5) TAGKEYS(XK_7, 6) TAGKEYS(XK_8, 7)
-            TAGKEYS(XK_9, 8){MODKEY | ShiftMask, XK_q, quit, {0}},
+            TAGKEYS(XK_9, 8){KeyPress, MODKEY | ShiftMask, XK_q, quit, {0}},
 };
 
 /* button definitions */
