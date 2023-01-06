@@ -110,6 +110,7 @@ static const char *termcmd[] = {"st", NULL};
 
 static const Key keys[] = {
     /* modifier | key | function | argument */
+    {0, XK_Super_L, spawn, {.v = runrofi}},
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY, XK_b, togglebar, {0}},
@@ -122,7 +123,7 @@ static const Key keys[] = {
     {MODKEY | ShiftMask, XK_h, setsmfact, {.f = +0.05}},
     {MODKEY | ShiftMask, XK_l, setsmfact, {.f = -0.05}},
     {MODKEY, XK_Return, zoom, {0}},
-    {0, XK_Pause, zoom, {0}},
+    {0, XK_Pause, setlayout, {0}},
     {MODKEY, XK_Tab, view, {0}},
     {MODKEY, XK_c, killclient, {0}},
     {MODKEY, XK_q, killclient, {0}},
