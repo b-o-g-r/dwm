@@ -97,6 +97,9 @@ static const char *upvol[] = {"amixer", "-D",  "pulse", "sset",
 static const char *downvol[] = {"amixer", "-D",  "pulse", "sset",
                                 "Master", "5%-", NULL};
 
+static const char *runrofi[] = {"rofi",       "-show",   "combi",
+                                "-kb-cancel", "Super_L", NULL};
+
 /* commands */
 static char dmenumon[2] =
     "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -121,7 +124,8 @@ static const Key keys[] = {
     {MODKEY, XK_Return, zoom, {0}},
     {0, XK_Pause, zoom, {0}},
     {MODKEY, XK_Tab, view, {0}},
-    {MODKEY | ShiftMask, XK_c, killclient, {0}},
+    {MODKEY, XK_c, killclient, {0}},
+    {MODKEY, XK_q, killclient, {0}},
     {MODKEY, XK_t, setlayout, {.v = &layouts[0]}},
     {MODKEY, XK_m, setlayout, {.v = &layouts[1]}},
     // 	{ MODKEY,                       XK_f,      setlayout,      {.v =

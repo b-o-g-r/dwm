@@ -94,6 +94,7 @@ enum {
   NetSupported,
   NetWMName,
   NetWMState,
+  NetSupportingWMCheck,
   NetWMCheck,
   NetSystemTray,
   NetSystemTrayOP,
@@ -613,6 +614,7 @@ void cleanup(void) {
   XSync(dpy, False);
   XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+  XDeleteProperty(dpy, root, netatom[NetSupportingWMCheck]);
 }
 
 void cleanupmon(Monitor *mon) {
@@ -1897,7 +1899,7 @@ void propertynotify(XEvent *e) {
     }
     if (ev->atom == XA_WM_NAME || ev->atom == netatom[NetWMName])
       updatetitle(c);
-      updaterules(c);
+      //updaterules(c);
     if (ev->atom == netatom[NetWMWindowType])
       updatewindowtype(c);
   }
@@ -2361,6 +2363,7 @@ void setup(void) {
   wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
   netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
   netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
+  netatom[NetSupportingWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
   netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
   netatom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
   netatom[NetSystemTrayOrientation] =
@@ -2407,6 +2410,14 @@ void setup(void) {
   XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
                   PropModeReplace, (unsigned char *)netatom, NetLast);
   XDeleteProperty(dpy, root, netatom[NetClientList]);
+	/* EWMH support for _NET_SUPPORTING_WM_CHECK */
+	XChangeProperty(dpy, root, netatom[NetSupportingWMCheck], XA_WINDOW,
+	                32, PropModeReplace, (unsigned char *)&mons->barwin, 1);
+	XChangeProperty(dpy, mons->barwin, netatom[NetSupportingWMCheck], XA_WINDOW,
+	                32, PropModeReplace, (unsigned char *)&mons->barwin, 1);
+	XChangeProperty(dpy, mons->barwin, netatom[NetWMName],
+	                XInternAtom(dpy, "UTF8_STRING", False), 8,
+	                PropModeReplace, (unsigned char *)"dwm", strlen("dwm"));
   /* select events */
   wa.cursor = cursor[CurNormal]->cursor;
   wa.event_mask = SubstructureRedirectMask | SubstructureNotifyMask |
