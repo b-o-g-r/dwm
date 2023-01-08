@@ -51,7 +51,7 @@ static const Rule rules[] = {
      */
     /* class      instance    title       tags mask     switchtotag isfloating
        monitor */
-    {"Firefox", NULL, NULL, 1 << 0, 1, 0, 0},
+    {"firefox", NULL, NULL, 1 << 0, 1, 0, 0},
     {"Google-chrome", NULL, NULL, 1 << 0, 1, 0, 0},
     {"Chrome-Remote-Desktop", NULL, NULL, 1 << 5, 0, 1, 1},
     {"VSCodium", NULL, NULL, 1 << 1, 1, 0, 1},
