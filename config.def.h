@@ -42,7 +42,7 @@ static const unsigned int alphas[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = {"Main", "Dev", "Media", "Games", "Misc", "[Work]"};
+static const char *tags[] = {"Main", "Dev", "Media", "Games", "Misc"};
 
 static const Rule rules[] = {
     /* xprop(1):
@@ -53,7 +53,7 @@ static const Rule rules[] = {
        monitor */
     {"firefox", NULL, NULL, 1 << 0, 1, 0, 0},
     {"Google-chrome", NULL, NULL, 1 << 0, 1, 0, 0},
-    {"Chrome-Remote-Desktop", NULL, NULL, 1 << 5, 0, 1, 1},
+    {"Chrome-Remote-Desktop", NULL, NULL, 1 << 0, 0, 1, 1},
     {"VSCodium", NULL, NULL, 1 << 1, 1, 0, 1},
 };
 
