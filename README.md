@@ -1,5 +1,5 @@
 # DWM
-Personal DWM Setup
+Personal [DWM](https://dwm.suckless.org/) Setup
 
 ## Installation
 * Install dependencies:
