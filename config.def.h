@@ -55,6 +55,8 @@ static const Rule rules[] = {
     {"Google-chrome", NULL, NULL, 1 << 0, 1, 0, 0},
     {"Chrome-Remote-Desktop", NULL, NULL, 1 << 0, 0, 1, 1},
     {"VSCodium", NULL, NULL, 1 << 1, 1, 0, 1},
+    {"figma-linux", NULL, NULL, 1 << 2, 1, 0, 1},
+    {"dolphin", NULL, NULL, 1 << 0, 1, 0, 0 }
 };
 
 /* layout(s) */
