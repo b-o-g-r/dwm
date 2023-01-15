@@ -101,8 +101,8 @@ static const char *upvol[] = {
     "sh", "-c", "amixer set Master 5%+ && pkill -RTMIN+2 dwmblocks", NULL};
 static const char *downvol[] = {
     "sh", "-c", "amixer set Master 5%- && pkill -RTMIN+2 dwmblocks", NULL};
-
 static const char *runrofi[] = {"sh", "-c", "rofi -show combi", NULL};
+static const char *screenshot[] = {"sh", "-c", "flameshot gui", NULL};
 
 /* commands */
 static char dmenumon[2] =
@@ -124,6 +124,7 @@ static const Key keys[] = {
     {KeyPress, MODKEY, XK_d, incnmaster, {.i = -1}},
     {KeyPress, MODKEY, XK_h, setmfact, {.f = -0.05}},
     {KeyPress, MODKEY, XK_l, setmfact, {.f = +0.05}},
+    {KeyPress, MODKEY | ShiftMask, XK_s, spawn, {.v = screenshot}},
     {KeyPress, MODKEY | ShiftMask, XK_h, setsmfact, {.f = +0.05}},
     {KeyPress, MODKEY | ShiftMask, XK_l, setsmfact, {.f = -0.05}},
     {KeyPress, MODKEY, XK_Return, zoom, {0}},
