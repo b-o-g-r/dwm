@@ -78,7 +78,6 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
-#define ALTMODKEY Mod1Mask
 
 #define TAGKEYS(KEY, TAG)                                                      \
   {KeyPress, MODKEY, KEY, view, {.ui = 1 << TAG}},                             \
@@ -173,9 +172,9 @@ static Button buttons[] = {
      * if you want to control these separately (i.e. to retain the feature to
      * move a tiled window into a floating position).
      */
-    {ClkClientWin, ALTMODKEY, Button1, moveorplace, {.i = 1}},
+    {ClkClientWin, MODKEY, Button1, moveorplace, {.i = 1}},
     {ClkClientWin, MODKEY, Button2, setlayout, {0}},
-    {ClkClientWin, ALTMODKEY, Button3, resizeorfacts, {0}},
+    {ClkClientWin, MODKEY, Button3, resizeorfacts, {0}},
     {ClkClientWin, MODKEY | ShiftMask, Button3, dragcfact, {0}},
     {ClkClientWin, MODKEY | ShiftMask, Button1, resizemouse, {0}},
     {ClkTagBar, 0, Button1, view, {0}},
