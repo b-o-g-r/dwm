@@ -101,7 +101,11 @@ static const char *upvol[] = {
 static const char *downvol[] = {
     "sh", "-c", "amixer set Master 5%- && pkill -RTMIN+2 dwmblocks", NULL};
 static const char *runrofi[] = {"sh", "-c", "rofi -show combi", NULL};
-static const char *screenshot[] = {"sh", "-c", "flameshot gui", NULL};
+static const char *screenshot[] = {
+    "sh", "-c",
+    "QT_AUTO_SCREEN_SCALE_FACTOR=0 QT_SCREEN_SCALE_FACTORS='0.8;0.8' flameshot "
+    "gui",
+    NULL};
 
 /* commands */
 static char dmenumon[2] =
