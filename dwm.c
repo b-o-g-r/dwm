@@ -2782,6 +2782,9 @@ void updatebars(void) {
                              .colormap = cmap,
                              .event_mask = ButtonPressMask | ExposureMask};
   XClassHint ch = {"dwm", "dwm"};
+  char* window_name = "dwm";  // Text to be displayed as the window name
+  XTextProperty name;
+  XStringListToTextProperty(&window_name, 1, &name);
   for (m = mons; m; m = m->next) {
     if (m->barwin)
       continue;
@@ -2797,6 +2800,8 @@ void updatebars(void) {
       XMapRaised(dpy, systray->win);
     XMapRaised(dpy, m->barwin);
     XSetClassHint(dpy, m->barwin, &ch);
+    XSetWMName(dpy, m->barwin, &name);
+
   }
 }
 
