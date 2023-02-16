@@ -1295,9 +1295,9 @@ void drawbar(Monitor *m) {
     drw_text(drw, x, 0, w * sp, bh, lrpad / 2, tags[i], urg & 1 << i);
     x += w;
   }
-  w = TEXTW(m->ltsymbol);
-  drw_setscheme(drw, scheme[SchemeNorm]);
-  x = drw_text(drw, x, 0, w * sp, bh, lrpad / 2, m->ltsymbol, 0);
+  // w = TEXTW(m->ltsymbol);
+  // drw_setscheme(drw, scheme[SchemeNorm]);
+  // x = drw_text(drw, x, 0, w * sp, bh, lrpad / 2, m->ltsymbol, 0);
 
   blw = w, ble = x;
   w = wbar - wstext - x;
@@ -1305,10 +1305,10 @@ void drawbar(Monitor *m) {
 	if (w > bh) {
     drw_setscheme(drw, scheme[SchemeNorm]);
     drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
-    drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
+    drw_rect(drw, x, 0, w, bh, 1, 1);
   }
 
-  XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, wbar, bh);
+  XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, wbar - sp * 2, bh);
 	drw_map(drw, m->barwin, 0, 0, wbar, bh);
 }
 
