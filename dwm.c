@@ -1243,9 +1243,6 @@ void drawbar(Monitor *m) {
   if (!m->showbar)
     return;
 
-  if (showsystray && m == systraytomon(m) && !systrayonleft)
-    wbar -= getsystraywidth();
-
   /* draw status first so it can be overdrawn by tags later */
   if (m == selmon || 1) { /* status is only drawn on selected monitor */
     char *stc = stextc;
@@ -1254,7 +1251,8 @@ void drawbar(Monitor *m) {
 
     wsbar = wbar;
     drw_setscheme(drw, scheme[SchemeNorm]);
-    x = wbar - wstext;
+    tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
+    x = wbar - wstext - tw;
     drw_rect(drw, x, 0, LSPAD, bh, 1, 1); x += LSPAD; /* to keep left padding clean */
     for (;;) {
             if ((unsigned char)*stc >= ' ') {
@@ -1277,6 +1275,11 @@ void drawbar(Monitor *m) {
     drw_rect(drw, x, 0, wbar - x, bh, 1, 1); /* to keep right padding clean */
   }
 
+
+  w = m->ww;
+  if (showsystray && m == systraytomon(m) && !systrayonleft)
+    w -= getsystraywidth();
+  
   // resizebarwin(m);
   for (c = m->clients; c; c = c->next) {
     occ |= c->tags;
@@ -1298,11 +1301,8 @@ void drawbar(Monitor *m) {
   drw_setscheme(drw, scheme[SchemeNorm]);
   x = drw_text(drw, x, 0, w * sp, bh, lrpad / 2, m->ltsymbol, 0);
 
-  if (m == selmon) {
-    blw = w, ble = x;
-    w = wbar - wstext - x;
-  } else
-    w = wbar - x;
+  blw = w, ble = x;
+  w = wbar - wstext - x;
 
 	if (w > bh) {
     drw_setscheme(drw, scheme[SchemeNorm]);
