@@ -1229,7 +1229,7 @@ void dragmfact(const Arg *arg) {
 
 void drawbar(Monitor *m) {
   /*return; tuito*/
-	int x, w, tw;
+	int x, w, tw = 0, stw = 0;
   int wbar = m->ww;
   int boxs = drw->fonts->h / 9;
   int boxw = drw->fonts->h / 6 + 2;
@@ -1242,6 +1242,9 @@ void drawbar(Monitor *m) {
 
   if (!m->showbar)
     return;
+
+  if (showsystray && m == systraytomon(m) && !systrayonleft)
+    wbar -= getsystraywidth();
 
   /* draw status first so it can be overdrawn by tags later */
   if (m == selmon || 1) { /* status is only drawn on selected monitor */
@@ -1262,7 +1265,7 @@ void drawbar(Monitor *m) {
             tmp = *stc;
             if (stp != stc) {
                     *stc = '\0';
-                    x = drw_text(drw, x, 0, TTEXTW(stp) - 2 * sp, bh, 0, stp, 0);
+                    x = drw_text(drw, x, 0, TTEXTW(stp), bh, 0, stp, 0);
             }
             if (tmp == '\0')
                     break;
@@ -1274,11 +1277,6 @@ void drawbar(Monitor *m) {
     drw_setscheme(drw, scheme[SchemeNorm]);
     drw_rect(drw, x, 0, wbar - x, bh, 1, 1); /* to keep right padding clean */
   }
-
-
-  w = m->ww;
-  if (showsystray && m == systraytomon(m) && !systrayonleft)
-    w -= getsystraywidth();
   
   // resizebarwin(m);
   for (c = m->clients; c; c = c->next) {
