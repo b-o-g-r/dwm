@@ -3217,10 +3217,10 @@ void updatesystray(void) {
       i->mon = m;
   }
   w = w ? w + systrayspacing : 1;
-  x -= w + wstext;
+  x -= w + wstext - 20;
   XMoveResizeWindow(dpy, systray->win, x, m->by, w, bh);
   wc.x = x;
-  wc.y = m->by;
+  wc.y = m->by + 5;
   wc.width = w;
   wc.height = bh;
   wc.stack_mode = Above;
@@ -3231,8 +3231,8 @@ void updatesystray(void) {
   XMapWindow(dpy, systray->win);
   XMapSubwindows(dpy, systray->win);
   /* redraw background */
-  XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
-  XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
+  // XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
+  // XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
   XSync(dpy, False);
 }
 
