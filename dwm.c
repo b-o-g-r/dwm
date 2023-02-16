@@ -3217,8 +3217,8 @@ void updatesystray(void) {
       i->mon = m;
   }
   w = w ? w + systrayspacing : 1;
-  x -= w;
-  XMoveResizeWindow(dpy, systray->win - 100, x, m->by, w, bh);
+  x -= w + systrayspacing + sw + wsbar/5;
+  XMoveResizeWindow(dpy, systray->win, x, m->by, w, bh);
   wc.x = x;
   wc.y = m->by;
   wc.width = w;
