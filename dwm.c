@@ -1264,7 +1264,7 @@ void drawbar(Monitor *m) {
             tmp = *stc;
             if (stp != stc) {
                     *stc = '\0';
-                    x = drw_text(drw, x, 0, TTEXTW(stp), bh, 0, stp, 0);
+                    x = drw_text(drw, x, 0, TTEXTW(stp) - 2 * sp, bh, 0, stp, 0);
             }
             if (tmp == '\0')
                     break;
@@ -3115,7 +3115,7 @@ void updatestatus(void) {
         }
   for (m = mons; m; m = m->next)
     drawbar(m);
-  // updatesystray();
+    updatesystray();
 }
 
 void updatesystrayicongeom(Client *i, int w, int h) {
