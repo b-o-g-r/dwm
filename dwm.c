@@ -1258,7 +1258,6 @@ void drawbar(Monitor *m) {
     drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
   }
 
-  // drw_map(drw, m->barwin, 0, 0, m->ww, bh);
   drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
 }
 
@@ -3040,7 +3039,7 @@ void updatesystray(void) {
     /* init systray */
     if (!(systray = (Systray *)calloc(1, sizeof(Systray))))
       die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
-    systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0,
+    systray->win = XCreateSimpleWindow(dpy, root, x, m->by + vp, w, bh, 0, 0,
                                        scheme[SchemeSel][ColBg].pixel);
     wa.event_mask = ButtonPressMask | ExposureMask;
     wa.override_redirect = True;
@@ -3071,7 +3070,7 @@ void updatesystray(void) {
     XMapRaised(dpy, i->win);
     w += systrayspacing;
     i->x = w;
-    XMoveResizeWindow(dpy, i->win, i->x, 0, i->w, i->h);
+    XMoveResizeWindow(dpy, i->win, i->x, vp, i->w, i->h);
     w += i->w;
     if (i->mon != m)
       i->mon = m;
