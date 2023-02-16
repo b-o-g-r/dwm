@@ -3113,7 +3113,8 @@ void updatestatus(void) {
         }
   for (m = mons; m; m = m->next)
     drawbar(m);
-    updatesystray();
+    
+  updatesystray();
 }
 
 void updatesystrayicongeom(Client *i, int w, int h) {
