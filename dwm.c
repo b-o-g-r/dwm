@@ -64,6 +64,13 @@
 #define HEIGHT(X) ((X)->h + 2 * (X)->bw)
 #define TAGMASK ((1 << LENGTH(tags)) - 1)
 #define TEXTW(X) (drw_fontset_getwidth(drw, (X)) + lrpad)
+#define TTEXTW(X)               (drw_fontset_getwidth(drw, (X)))
+
+#define STATUSLENGTH            256
+#define DWMBLOCKSLOCKFILE       "/var/local/dwmblocks/dwmblocks.pid"
+#define DELIMITERENDCHAR        10
+#define LSPAD                   (lrpad / 2) /* padding on left side of status text */
+#define RSPAD                   (lrpad / 2) /* padding on right side of status text */
 
 #define OPAQUE 0xffU
 
@@ -90,7 +97,7 @@ enum {
   CurDragFact,
   CurLast
 };                              /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeWarn, SchemeUrgent }; /* color schemes */
 enum {
   NetSupported,
   NetWMName,
@@ -345,9 +352,13 @@ static const char broken[] = "broken";
 static const char dwmdir[] = "dwm";
 static const char localshare[] = ".local/share";
 static char stext[256];
+static char stextc[STATUSLENGTH];
+static char stexts[STATUSLENGTH];
 static int screen;
 static int sw, sh; /* X display screen geometry width, height */
-static int bh;     /* bar height */
+static int bh, blw, ble;     /* bar geometry */
+static int wsbar;            /* width of selmon bar */
+static int wstext;           /* width of status text */
 static int lrpad;  /* sum of left and right padding for text */
 static int vp; /* vertical padding for bar */
 static int sp; /* side padding for bar */
@@ -1211,24 +1222,52 @@ void dragmfact(const Arg *arg) {
 
 void drawbar(Monitor *m) {
   /*return; tuito*/
-  int x, w, tw = 0, stw = 0;
+	int x, w;
+  int wbar = m->ww;
   int boxs = drw->fonts->h / 9;
   int boxw = drw->fonts->h / 6 + 2;
   unsigned int i, occ = 0, urg = 0;
+  char *ts = stext;
+	char *tp = stext;
+	int tx = 0;
+	char ctmp;
   Client *c;
 
   if (!m->showbar)
     return;
 
   if (showsystray && m == systraytomon(m) && !systrayonleft)
-    stw = getsystraywidth();
+    wbar -= getsystraywidth();
 
   /* draw status first so it can be overdrawn by tags later */
   if (m == selmon || 1) { /* status is only drawn on selected monitor */
+    char *stc = stextc;
+    char *stp = stextc;
+    char tmp;
+
+    wsbar = wbar;
     drw_setscheme(drw, scheme[SchemeNorm]);
-    tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
-    // drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2, m->sel->name, 0);
-    drw_text(drw, m->ww - tw - 2 * sp, 0, tw, bh, 0, stext, 0);
+    x = wbar - wstext;
+    drw_rect(drw, x, 0, LSPAD, bh, 1, 1); x += LSPAD; /* to keep left padding clean */
+    for (;;) {
+            if ((unsigned char)*stc >= ' ') {
+                    stc++;
+                    continue;
+            }
+            tmp = *stc;
+            if (stp != stc) {
+                    *stc = '\0';
+                    x = drw_text(drw, x, 0, TTEXTW(stp), bh, 0, stp, 0);
+            }
+            if (tmp == '\0')
+                    break;
+            if (tmp - DELIMITERENDCHAR - 1 < LENGTH(colors))
+                    drw_setscheme(drw, scheme[tmp - DELIMITERENDCHAR - 1]);
+            *stc = tmp;
+            stp = ++stc;
+    }
+    drw_setscheme(drw, scheme[SchemeNorm]);
+    drw_rect(drw, x, 0, wbar - x, bh, 1, 1); /* to keep right padding clean */
   }
 
   resizebarwin(m);
@@ -1252,13 +1291,20 @@ void drawbar(Monitor *m) {
   drw_setscheme(drw, scheme[SchemeNorm]);
   x = drw_text(drw, x, 0, w * sp, bh, lrpad / 2, m->ltsymbol, 0);
 
-  if ((w = m->ww - tw - stw - x) > bh) {
+  if (m == selmon) {
+    blw = w, ble = x;
+    w = wbar - wstext - x;
+  } else
+    w = wbar - x;
 
+	if (w > bh) {
     drw_setscheme(drw, scheme[SchemeNorm]);
+    drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
     drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
   }
 
-  drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
+  XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, wbar, bh);
+	drw_map(drw, m->barwin, 0, 0, wbar, bh);
 }
 
 void drawbars(void) {
