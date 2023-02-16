@@ -2447,7 +2447,7 @@ void setup(void) {
   if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
     die("no fonts could be loaded.");
   lrpad = drw->fonts->h;
-  bh = drw->fonts->h + 2;
+  bh = drw->fonts->h;
   sp = sidepad;
 	vp = (topbar == 1) ? vertpad : - vertpad;
   updategeom();
@@ -3211,7 +3211,7 @@ void updatesystray(void) {
     XMapRaised(dpy, i->win);
     w += systrayspacing;
     i->x = w;
-    XMoveResizeWindow(dpy, i->win, i->x, vp, i->w, i->h);
+    XMoveResizeWindow(dpy, i->win, i->x, vp - 3, i->w, i->h-3);
     w += i->w;
     if (i->mon != m)
       i->mon = m;
