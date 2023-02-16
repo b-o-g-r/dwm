@@ -1229,7 +1229,7 @@ void dragmfact(const Arg *arg) {
 
 void drawbar(Monitor *m) {
   /*return; tuito*/
-	int x, w;
+	int x, w, tw;
   int wbar = m->ww;
   int boxs = drw->fonts->h / 9;
   int boxw = drw->fonts->h / 6 + 2;
