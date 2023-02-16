@@ -972,8 +972,8 @@ void dragfact(const Arg *arg) {
       }
 
       c->cfact = MAX(0.25, MIN(4.0, cfact));
-      m->mfact = MAX(0.05, MIN(0.95, mfact));
-      m->smfact = MAX(0.05, MIN(0.95, smfact));
+      m->mfact = MAX(0.5, MIN(0.75, mfact));
+      m->smfact = MAX(0.05, MIN(0.815, smfact));
 
       arrangemon(m);
       break;
@@ -2364,11 +2364,10 @@ void dragcfact(const Arg *arg) {
     }
   } while (ev.type != ButtonRelease);
 
-  // XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
+  XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 
   XUngrabPointer(dpy, CurrentTime);
-  while (XCheckMaskEvent(dpy, EnterWindowMask, &ev))
-    ;
+  while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 
 void setup(void) {
