@@ -14,7 +14,7 @@ static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
 static const int vertpad = 5;       /* vertical padding of bar */
 static const int sidepad = 10;       /* horizontal padding of bar */
-static const char *fonts[] = {"Hack Nerd Font Mono:size=16"};
+static const char *fonts[] = {"fontawesome:size=18", "Hack Nerd Font Mono:size=16", };
 static const char font[] = {"Hack Nerd Font Mono:size=16"};
 static const char dmenufont[] = "Hack Nerd Font Mono:size=16";
 static const char col_gray1[] = "#222222";
@@ -27,26 +27,26 @@ static const char col_black[] = "#000000";
 static const char col_red[] = "#ff0000";
 static const char col_yellow[] = "#ffff00";
 static const char col_white[] = "#ffffff";
-static const char col1[] = "#ffffff";
-static const char col2[] = "#aaaaaa";
-static const char col3[] = "#222222";
-static const char col4[] = "#cccccc";
-static const char col5[] = "#333333";
-static const char col6[] = "#12dad4";
+static const char col1[] = "#FCAB64";
+static const char col2[] = "#E6DDAF";
+static const char col3[] = "#FCBF82";
+static const char col4[] = "#CFE7BF";
+static const char col5[] = "#A1FCDF";
+static const char col6[] = "#84A398";
 static const unsigned int baralpha = 0xd0;
 static const unsigned int borderalpha = OPAQUE;
 static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-    [SchemeSel] = { col_gray4, col_orange, col_yellow },
-    [SchemeWarn] = { col_black, col_yellow, col_red },
-	[SchemeUrgent]= { col_white, col_red,    col_red },
-	[SchemeCol1]  = { col1,      col_gray1, col_gray2 },
-	[SchemeCol2]  = { col2,      col_gray1, col_gray2 },
-	[SchemeCol3]  = { col3,      col_gray1, col_gray2 },
-	[SchemeCol4]  = { col4,      col_gray1, col_gray2 },
-	[SchemeCol5]  = { col5,      col_gray1, col_gray2 },
-	[SchemeCol6]  = { col6,      col_gray1, col_gray2 },
+    [SchemeSel] = { col_white, col_orange, col_orange }, // tabs
+    [SchemeWarn] = { col_black, col2, col2 }, // Lang
+	[SchemeUrgent]= { col_black, col1,    col1 }, // clock
+	[SchemeCol1]  = { col_black,      col3, col3 }, // vol
+	[SchemeCol2]  = { col_black,      col2, col2 }, // 
+	[SchemeCol3]  = { col_black,      col3, col3 },
+	[SchemeCol4]  = { col_black,      col4, col4 }, // statusbar
+	[SchemeCol5]  = { col_black,      col5, col5 },
+	[SchemeSystray]  = { col_black,      col6, col6 }, // systray
 };
 static const unsigned int alphas[][3] = {
     /*               fg      bg        border     */
@@ -55,7 +55,7 @@ static const unsigned int alphas[][3] = {
 };
 
 /* tagging */
-static const char *tags[] = {"Main", "Dev", "Media", "Games", "Misc"};
+static const char *tags[] = {"", "", "", "", ""};
 
 static const Rule rules[] = {
     /* xprop(1):

@@ -100,7 +100,7 @@ enum {
   CurLast
 };                              /* cursor */
 enum { SchemeNorm, SchemeSel, SchemeWarn, SchemeUrgent, SchemeCol1, SchemeCol2, SchemeCol3, SchemeCol4,
-       SchemeCol5, SchemeCol6 }; /* color schemes */
+       SchemeCol5, SchemeSystray }; /* color schemes */
 enum {
   NetSupported,
   NetWMName,
@@ -1253,7 +1253,7 @@ void drawbar(Monitor *m) {
     char tmp;
 
     wsbar = wbar;
-    drw_setscheme(drw, scheme[SchemeNorm]);
+    drw_setscheme(drw, scheme[SchemeCol4]);
     tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
     x = wbar - wstext - tw;
     drw_rect(drw, x, 0, LSPAD, bh, 1, 1); x += LSPAD; /* to keep left padding clean */
@@ -1291,19 +1291,19 @@ void drawbar(Monitor *m) {
 		// 	continue;
     w = TEXTW(tags[i]);
     drw_setscheme(
-        drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+        drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeCol2]);
     drw_text(drw, x, 0, w * sp, bh, lrpad / 2, tags[i], urg & 1 << i);
     x += w;
   }
   w = TEXTW(m->ltsymbol);
-  drw_setscheme(drw, scheme[SchemeNorm]);
+  drw_setscheme(drw, scheme[SchemeCol5]);
   x = drw_text(drw, x, 0, w * sp, bh, lrpad / 2, m->ltsymbol, 0);
 
   blw = w, ble = x;
   w = wbar - wstext - x;
 
 	if (w > bh) {
-    drw_setscheme(drw, scheme[SchemeNorm]);
+    drw_setscheme(drw, scheme[SchemeCol5]);
     drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
     drw_rect(drw, x, 0, w, bh, 1, 1);
   }
@@ -3231,8 +3231,8 @@ void updatesystray(void) {
   XMapWindow(dpy, systray->win);
   XMapSubwindows(dpy, systray->win);
   /* redraw background */
-  // XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
-  // XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
+  XSetForeground(dpy, drw->gc, scheme[SchemeSystray][ColBg].pixel);
+  XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
   XSync(dpy, False);
 }
 
